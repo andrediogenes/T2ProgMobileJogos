@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.example.t2progmobilejogos.OBJETOS.Jogador;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class DAO extends SQLiteOpenHelper {
         String sql_jogador = "CREATE TABLE JOGADOR (JOGADOR_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "JOGADOR_IDTIME INTEGER," +
                 "JOGADOR_NOME TEXT," +
-                "JOGADOR_CPF TEXT," +
+                "JOGADOR_CPF TEXT UNIQUE," +
                 "JOGADOR_NASC INT);";
         String sql_time = "CREATE TABLE TIME (TIME_ID INTEGER PRIMARY KEY AUTOINCREMENT,"+
                 "TIME_DESCRICAO INTEGER);";
@@ -42,5 +44,23 @@ public class DAO extends SQLiteOpenHelper {
         db.execSQL(sql_time);
 
         onCreate(db);
+    }
+
+    public String insereJogador(Jogador jogador){
+        SQLiteDatabase db = getWritableDatabase();
+
+        //Dados a serem gravados no banco
+        try {
+            ContentValues dadosJogador = new ContentValues();
+            dadosJogador.put("JOGADOR_NOME", jogador.getJogador_nome());
+            dadosJogador.put("JOGADOR_CPF", jogador.getJogador_CPF());
+            dadosJogador.put("JOGADOR_NASC", jogador.getJogador_nasc());
+
+            db.insertOrThrow("JOGADOR", null,dadosJogador);
+            db.close();
+        } catch (SQLiteConstraintException erro) {
+            return "Jogador já cadastrado com esse CPF";
+        }
+        return "Sucesso ao cadastrar jogador";
     }
 }
