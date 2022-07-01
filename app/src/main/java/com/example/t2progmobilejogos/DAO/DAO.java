@@ -47,13 +47,16 @@ public class DAO extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    //Passado um jogador, insere ele no banco
-    public String insereJogador(Jogador jogador){
+    //Passado um jogador e um time, insere ele no banco vinculado ao time pertencente
+    public String insereJogador(Jogador jogador, String descricaoTime){
         SQLiteDatabase db = getWritableDatabase();
+
+        Integer idTime = retornaIDTime(descricaoTime);
 
         //Dados a serem gravados no banco
         try {
             ContentValues dadosJogador = new ContentValues();
+            dadosJogador.put("JOGADOR_IDTIME", idTime);
             dadosJogador.put("JOGADOR_NOME", jogador.getJogador_nome());
             dadosJogador.put("JOGADOR_CPF", jogador.getJogador_CPF());
             dadosJogador.put("JOGADOR_NASC", jogador.getJogador_nasc());
