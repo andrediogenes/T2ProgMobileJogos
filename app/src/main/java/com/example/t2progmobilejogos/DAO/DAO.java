@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.example.t2progmobilejogos.OBJETOS.Jogador;
+import com.example.t2progmobilejogos.OBJETOS.Time;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class DAO extends SQLiteOpenHelper {
                 "JOGADOR_CPF TEXT UNIQUE," +
                 "JOGADOR_NASC INT);";
         String sql_time = "CREATE TABLE TIME (TIME_ID INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                "TIME_DESCRICAO INTEGER);";
+                "TIME_DESCRICAO TEXT UNIQUE);";
 
         db.execSQL(sql_jogador);
         db.execSQL(sql_time);
@@ -80,5 +81,53 @@ public class DAO extends SQLiteOpenHelper {
             return "Erro de delete";
         }
         return "Jogador deletado com sucesso";
+    }
+
+    //Dado um time, Insere ele no banco
+    public String insereLivro(Time time){
+        SQLiteDatabase db = getWritableDatabase();
+
+        //Dados a serem gravados no banco
+        try {
+            ContentValues dados_time = new ContentValues();
+            dados_time.put("TIME_DESCRICAO", time.getTime_descricao());
+
+            db.insertOrThrow("TIME", null,dados_time);
+            db.close();
+        } catch (SQLiteConstraintException erro) {
+            return "Erro de insercao, TIME já cadastrado";
+        }
+        return "Time cadastrado com sucesso";
+    }
+
+    //Dado uma descricao de time, realiza o delete
+    public String deletaTime(String descricao){
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            String sqli_deleta_time = "DELETE FROM TIME WHERE TIME_DESCRICAO = " +
+                    "'" +
+                    descricao +
+                    "'";
+
+            db.execSQL(sqli_deleta_time);
+            db.close();
+        } catch (SQLiteConstraintException erro){
+            return "Erro de delete";
+        }
+        return "Time deletado com sucesso";
+    }
+
+    //Pesquisa um TIME pela descricao e o retorna pelo ID
+    public Integer retornaIDTime(String descricao){
+        SQLiteDatabase db = getWritableDatabase();
+        String sqli_busca_time = "SELECT * FROM TIME WHERE TIME_DESCRICAO = " +
+                "'" +
+                descricao +
+                "'";
+        Cursor c = db.rawQuery(sqli_busca_time, null);
+        Integer id = c.getColumnIndex("TIME_ID");
+        db.close();
+        c.close();
+        return id;
     }
 }
