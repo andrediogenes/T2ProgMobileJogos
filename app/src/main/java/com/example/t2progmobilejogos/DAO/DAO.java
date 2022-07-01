@@ -46,6 +46,7 @@ public class DAO extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    //Passado um jogador, insere ele no banco
     public String insereJogador(Jogador jogador){
         SQLiteDatabase db = getWritableDatabase();
 
@@ -62,5 +63,22 @@ public class DAO extends SQLiteOpenHelper {
             return "Jogador já cadastrado com esse CPF";
         }
         return "Sucesso ao cadastrar jogador";
+    }
+
+    //Deleta um jogador pelo CPF
+    public String deletaJogador(String CPF){
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            String sqli_deleta_jogador = "DELETE FROM JOGADOR WHERE JOGADOR_CPF = " +
+                    "'" +
+                    CPF +
+                    "'";
+
+            db.execSQL(sqli_deleta_jogador);
+            db.close();
+        } catch (SQLiteConstraintException erro){
+            return "Erro de delete";
+        }
+        return "Jogador deletado com sucesso";
     }
 }
