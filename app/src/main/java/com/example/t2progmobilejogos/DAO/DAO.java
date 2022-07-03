@@ -87,7 +87,7 @@ public class DAO extends SQLiteOpenHelper {
     }
 
     //Dado um time, Insere ele no banco
-    public String insereLivro(Time time){
+    public String insereTime(Time time){
         SQLiteDatabase db = getWritableDatabase();
 
         //Dados a serem gravados no banco
@@ -132,5 +132,74 @@ public class DAO extends SQLiteOpenHelper {
         db.close();
         c.close();
         return id;
+    }
+
+    //Funcao que retorna um Arraylist de Jogadores
+    public ArrayList<Jogador> listarJogadores() {
+        ArrayList<Jogador> linhas = new ArrayList<>();
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            Cursor c = db.rawQuery("SELECT * FROM JOGADOR", null);
+
+            while(c.moveToNext()){
+                Jogador jogador = new Jogador();
+                jogador.setJogador_nome(c.getString(c.getColumnIndexOrThrow("JOGADOR_NOME")));
+                jogador.setJogador_CPF(c.getString(c.getColumnIndexOrThrow("JOGADOR_CPF")));
+                jogador.setJogador_nasc(c.getInt(c.getColumnIndexOrThrow("JOGADOR_NASC")));
+                linhas.add(jogador);
+            }
+            db.close();
+            c.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return linhas;
+    }
+    //Funcao que retorna um Arraylist de TIMES
+    public ArrayList<Time> listarTimes() {
+        ArrayList<Time> linhas = new ArrayList<>();
+        try {
+            SQLiteDatabase db = getWritableDatabase();
+            Cursor c = db.rawQuery("SELECT * FROM TIME", null);
+
+            while(c.moveToNext()){
+                Time time = new Time();
+                time.setTime_descricao(c.getString(c.getColumnIndexOrThrow("TIME_DESCRICAO")));
+                linhas.add(time);
+            }
+            db.close();
+            c.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return linhas;
+    }
+
+    //Funcao que atualiza Jogador
+    public long atualizarJogador(Jogador jogador){
+        long retornoBD;
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("JOGADOR_NOME",jogador.getJogador_nome());
+        values.put("JOGADOR_CPF",jogador.getJogador_CPF());
+        values.put("JOGADOR_NASC", jogador.getJogador_nasc());
+        String[] args = {String.valueOf(jogador.getJogador_CPF())};
+        retornoBD=db.update("USUARIO",values,"JOGADOR_CPF=?",args);
+        db.close();
+        return retornoBD;
+    }
+
+    //Funcao que atualiza Time, dado uma nova descricao e o ID do time que se deseja alterar
+    public long atualizarTime(String descricao, Integer id_time){
+        long retornoBD;
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("TIME_DESCRICAO",descricao);
+        String[] args = {String.valueOf(id_time)};
+        retornoBD=db.update("USUARIO",values,"TIME_ID=?",args);
+        db.close();
+        return retornoBD;
     }
 }
